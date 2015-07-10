@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import os
 import json
-from pprint import pprint
 
 docker_path = "/var/lib/docker"
 containers_path = docker_path + "/containers"
