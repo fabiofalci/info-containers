@@ -19,12 +19,19 @@ class Containers:
 
         return number_of_containers
 
-    def get_container(self):
-        container = []
+    def get_containers(self):
+        containers = []
         for container_id in os.listdir(self.path):
-            container.append(Container(container_id))
+            containers.append(Container(container_id))
 
-        return container
+        return containers
+
+    def get_images(self):
+        images = []
+        for image_id in os.listdir(graph_path):
+            images.append(image_id)
+
+        return images
 
 
 class Container:
@@ -79,9 +86,9 @@ def main():
 
     statistics = Statistics()
 
-    containers = containers.get_container()
+    containerList = containers.get_containers()
 
-    for container in containers:
+    for container in containerList:
         print("Container ID '{0}' Name '{1}'".format(container.short_id(), container.name))
         print("\tImage: ", container.image)
         print("\tNumber of images: ", len(container.images))
@@ -95,6 +102,13 @@ def main():
     print("Most used:")
     for k, v in statistics.get_most_used_images():
         print(k, " ", v)
+    print()
+
+    print("Not used:")
+    for image_id in containers.get_images():
+        if image_id in statistics.images_used:
+            print(image_id)
+
 
 
 if __name__ == "__main__":
