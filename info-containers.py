@@ -31,15 +31,14 @@ class Container:
 
     def __init__(self, id):
         self.id = id
-
-    def short_id(self):
-        return self.id[:12]
-
-    def get_image(self):
         with open(containers_path + "/" + self.id + "/config.json") as data_file:
             data = json.load(data_file)
 
-        return data["Image"]
+        self.image = data["Image"]
+        self.name = data["Name"]
+
+    def short_id(self):
+        return self.id[:12]
 
 
 def main():
@@ -51,9 +50,8 @@ def main():
     containers = containers.get_container()
 
     for container in containers:
-        print("Container ID: ", container.short_id())
-        print("\tImage: ", container.get_image())
-
+        print("Container ID '{0}' Name '{1}'".format(container.short_id(), container.name))
+        print("\tImage: ", container.image)
 
 
 if __name__ == "__main__":
