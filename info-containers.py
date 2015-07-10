@@ -36,6 +36,20 @@ class Container:
 
         self.image = data["Image"]
         self.name = data["Name"]
+        self.images = []
+
+        self.read_image(self.image)
+
+    def read_image(self, image_id):
+        self.images.append(image_id)
+
+        with open(graph_path + "/" + image_id + "/json") as data_file:
+            image = json.load(data_file)
+
+        if "parent" in image:
+            parent_id = image["parent"]
+            if parent_id:
+                self.read_image(parent_id)
 
     def short_id(self):
         return self.id[:12]
@@ -52,6 +66,8 @@ def main():
     for container in containers:
         print("Container ID '{0}' Name '{1}'".format(container.short_id(), container.name))
         print("\tImage: ", container.image)
+        print("\tNumber of images: ", len(container.images))
+        print()
 
 
 if __name__ == "__main__":
