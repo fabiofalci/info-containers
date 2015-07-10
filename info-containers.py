@@ -60,6 +60,11 @@ class Image:
         if "parent" in data:
             self.parent_id = data["parent"]
 
+        if "Size" in data:
+            self.size = data["Size"] // 1000000
+        else:
+            self.size = 0
+
     def __str__(self):
         return self.id
 
@@ -99,15 +104,15 @@ def main():
 
         print()
 
-    print("Most used:")
+    print("Most used (ID | Quantity):")
     for k, v in statistics.get_most_used_images():
         print(k, " ", v)
     print()
 
-    print("Not used:")
+    print("Not used (ID | Size MB):")
     for image_id in docker.images:
         if image_id in statistics.images_used:
-            print(image_id)
+            print(image_id, " ", docker.images[image_id].size)
 
 
 if __name__ == "__main__":
