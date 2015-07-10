@@ -6,34 +6,29 @@ docker_path = "/var/lib/docker"
 containers_path = docker_path + "/containers"
 graph_path = docker_path + "/graph"
 
-class Containers:
+class Docker:
+
+    def __init__(self):
+        self.containers = {}
+        self.images = {}
+
+        for image_id in os.listdir(graph_path):
+            if image_id != "_tmp":
+                self.images[image_id] = Image(image_id)
+
+        for container_id in os.listdir(containers_path):
+            self.containers[container_id] = Container(container_id, self)
 
     def get_number_of_containers(self):
-        number_of_containers = 0
-        for _ in os.listdir(containers_path):
-            number_of_containers += 1
-
-        return number_of_containers
-
-    def get_containers(self):
-        containers = []
-        for container_id in os.listdir(containers_path):
-            containers.append(Container(container_id))
-
-        return containers
-
-    def get_images(self):
-        images = []
-        for image_id in os.listdir(graph_path):
-            images.append(image_id)
-
-        return images
+        return len(self.containers)
 
 
 class Container:
 
-    def __init__(self, id):
+    def __init__(self, id, docker):
         self.id = id
+        self.docker = docker
+
         with open(containers_path + "/" + self.id + "/config.json") as data_file:
             data = json.load(data_file)
 
@@ -44,7 +39,7 @@ class Container:
         self.read_image(self.image)
 
     def read_image(self, image_id):
-        image = Image(image_id)
+        image = self.docker.images[image_id]
         self.images.append(image)
 
         if hasattr(image, "parent_id") and image.parent_id:
@@ -88,14 +83,12 @@ class Statistics:
 def main():
     print("Container info")
 
-    containers = Containers()
-    print("Number of containers ", containers.get_number_of_containers())
+    docker = Docker()
+    print("Number of containers ", docker.get_number_of_containers())
 
     statistics = Statistics()
 
-    container_list = containers.get_containers()
-
-    for container in container_list:
+    for container in docker.containers.values():
         print("Container ID '{0}' Name '{1}'".format(container.short_id(), container.name))
         print("\tImage: ", container.image)
         print("\tNumber of images: ", len(container.images))
@@ -112,10 +105,9 @@ def main():
     print()
 
     print("Not used:")
-    for image_id in containers.get_images():
+    for image_id in docker.images:
         if image_id in statistics.images_used:
             print(image_id)
-
 
 
 if __name__ == "__main__":
