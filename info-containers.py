@@ -26,6 +26,7 @@ class Containers:
 
         return container
 
+
 class Container:
 
     def __init__(self, id):
@@ -54,11 +55,29 @@ class Container:
         return self.id[:12]
 
 
+class Statistics:
+
+    def __init__(self):
+        self.images_used = {}
+
+    def used(self, image_id):
+        if image_id not in self.images_used:
+            self.images_used[image_id] = 0
+
+        self.images_used[image_id] = self.images_used[image_id] + 1
+
+    def get_most_used_images(self):
+        ordered = ((k, self.images_used[k]) for k in sorted(self.images_used, key=self.images_used.get, reverse=True))
+        return ordered
+
+
 def main():
     print("Container info")
 
     containers = Containers(containers_path, graph_path)
     print("Number of containers ", containers.get_number_of_containers())
+
+    statistics = Statistics()
 
     containers = containers.get_container()
 
@@ -69,9 +88,13 @@ def main():
 
         for image in container.images:
             print("\t\tImage: ", image)
-
+            statistics.used(image)
 
         print()
+
+    print("Most used:")
+    for k, v in statistics.get_most_used_images():
+        print(k, " ", v)
 
 
 if __name__ == "__main__":
