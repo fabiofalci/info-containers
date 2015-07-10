@@ -48,18 +48,29 @@ class Container:
         self.read_image(self.image)
 
     def read_image(self, image_id):
-        self.images.append(image_id)
+        image = Image(image_id)
+        self.images.append(image)
 
-        with open(graph_path + "/" + image_id + "/json") as data_file:
-            image = json.load(data_file)
-
-        if "parent" in image:
-            parent_id = image["parent"]
-            if parent_id:
-                self.read_image(parent_id)
+        if hasattr(image, "parent_id") and image.parent_id:
+            self.read_image(image.parent_id)
 
     def short_id(self):
         return self.id[:12]
+
+
+class Image:
+
+    def __init__(self, id):
+        self.id = id
+
+        with open(graph_path + "/" + id + "/json") as data_file:
+            data = json.load(data_file)
+
+        if "parent" in data:
+            self.parent_id = data["parent"]
+
+    def __str__(self):
+        return self.id
 
 
 class Statistics:
@@ -86,16 +97,16 @@ def main():
 
     statistics = Statistics()
 
-    containerList = containers.get_containers()
+    container_list = containers.get_containers()
 
-    for container in containerList:
+    for container in container_list:
         print("Container ID '{0}' Name '{1}'".format(container.short_id(), container.name))
         print("\tImage: ", container.image)
         print("\tNumber of images: ", len(container.images))
 
         for image in container.images:
             print("\t\tImage: ", image)
-            statistics.used(image)
+            statistics.used(image.id)
 
         print()
 
