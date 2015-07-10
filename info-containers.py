@@ -8,20 +8,16 @@ graph_path = docker_path + "/graph"
 
 class Containers:
 
-    def __init__(self, path, graph_path):
-        self.path = path
-        self.graph_path = graph_path
-
     def get_number_of_containers(self):
         number_of_containers = 0
-        for _ in os.listdir(self.path):
+        for _ in os.listdir(containers_path):
             number_of_containers += 1
 
         return number_of_containers
 
     def get_containers(self):
         containers = []
-        for container_id in os.listdir(self.path):
+        for container_id in os.listdir(containers_path):
             containers.append(Container(container_id))
 
         return containers
@@ -92,7 +88,7 @@ class Statistics:
 def main():
     print("Container info")
 
-    containers = Containers(containers_path, graph_path)
+    containers = Containers()
     print("Number of containers ", containers.get_number_of_containers())
 
     statistics = Statistics()
