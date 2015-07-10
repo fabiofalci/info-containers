@@ -67,6 +67,11 @@ def main():
         print("Container ID '{0}' Name '{1}'".format(container.short_id(), container.name))
         print("\tImage: ", container.image)
         print("\tNumber of images: ", len(container.images))
+
+        for image in container.images:
+            print("\t\tImage: ", image)
+
+
         print()
 
 
